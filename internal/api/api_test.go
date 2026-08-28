@@ -184,6 +184,14 @@ func TestRunCollection_AgainstLiveServer(t *testing.T) {
 	if len(runList) != 1 {
 		t.Fatalf("len(runList) = %d, want 1 (run should have been persisted)", len(runList))
 	}
+
+	embeddedReport, ok := runList[0]["report"].(map[string]any)
+	if !ok {
+		t.Fatalf("report field is not an embedded JSON object: %v", runList[0]["report"])
+	}
+	if embeddedReport["collectionName"] != "Demo" {
+		t.Fatalf("embedded report mismatch: %v", embeddedReport)
+	}
 }
 
 func TestSendRequest_RecordsHistory(t *testing.T) {

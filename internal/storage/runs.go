@@ -13,15 +13,15 @@ import (
 // dependency graph stays one-directional (runner produces results, storage
 // persists bytes — it doesn't need to understand their shape).
 type RunRecord struct {
-	ID              string
-	CollectionID    string
-	CollectionName  string
-	EnvironmentName string
-	Report          []byte
-	Passed          int
-	Failed          int
-	StartedAt       time.Time
-	DurationMS      int64
+	ID              string    `json:"id"`
+	CollectionID    string    `json:"collectionId"`
+	CollectionName  string    `json:"collectionName"`
+	EnvironmentName string    `json:"environmentName"`
+	Report          []byte    `json:"-"` // see api.runSummary: embedded as raw JSON, not base64
+	Passed          int       `json:"passed"`
+	Failed          int       `json:"failed"`
+	StartedAt       time.Time `json:"startedAt"`
+	DurationMS      int64     `json:"durationMs"`
 }
 
 // SaveRun persists a completed test run. A missing ID is assigned before

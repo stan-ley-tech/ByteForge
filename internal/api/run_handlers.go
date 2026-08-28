@@ -78,13 +78,43 @@ func (s *Server) persistRun(r *http.Request, collectionID string, report *runner
 	return err
 }
 
+// runSummary mirrors storage.RunRecord for the API surface, with Report
+// embedded as raw JSON instead of the base64 string Go's encoding/json
+// would otherwise produce for a []byte field.
+type runSummary struct {
+	ID              string          `json:"id"`
+	CollectionID    string          `json:"collectionId"`
+	CollectionName  string          `json:"collectionName"`
+	EnvironmentName string          `json:"environmentName"`
+	Report          json.RawMessage `json:"report"`
+	Passed          int             `json:"passed"`
+	Failed          int             `json:"failed"`
+	StartedAt       time.Time       `json:"startedAt"`
+	DurationMS      int64           `json:"durationMs"`
+}
+
 func (s *Server) handleListRuns(w http.ResponseWriter, r *http.Request) {
 	runs, err := s.store.ListRuns(r.Context(), r.PathValue("id"), 50)
 	if err != nil {
 		writeError(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, runs)
+
+	summaries := make([]runSummary, len(runs))
+	for i, run := range runs {
+		summaries[i] = runSummary{
+			ID:              run.ID,
+			CollectionID:    run.CollectionID,
+			CollectionName:  run.CollectionName,
+			EnvironmentName: run.EnvironmentName,
+			Report:          json.RawMessage(run.Report),
+			Passed:          run.Passed,
+			Failed:          run.Failed,
+			StartedAt:       run.StartedAt,
+			DurationMS:      run.DurationMS,
+		}
+	}
+	writeJSON(w, http.StatusOK, summaries)
 }
 
 type sendRequestInput struct {

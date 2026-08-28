@@ -12,13 +12,13 @@ import (
 // collection run — the equivalent of a browser's address bar history for
 // requests fired from the builder.
 type HistoryEntry struct {
-	ID          string
-	RequestName string
-	Method      string
-	URL         string
-	Status      int
-	DurationMS  int64
-	ExecutedAt  time.Time
+	ID          string    `json:"id"`
+	RequestName string    `json:"requestName"`
+	Method      string    `json:"method"`
+	URL         string    `json:"url"`
+	Status      int       `json:"status"`
+	DurationMS  int64     `json:"durationMs"`
+	ExecutedAt  time.Time `json:"executedAt"`
 }
 
 // AddHistory records a single request execution.

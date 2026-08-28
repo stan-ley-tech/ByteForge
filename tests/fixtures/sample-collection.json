@@ -1,0 +1,45 @@
+{
+  "name": "JSONPlaceholder Smoke Tests",
+  "description": "A small collection used in the docs, in CI, and for manual smoke testing. Runs against the public JSONPlaceholder test API.",
+  "requests": [
+    {
+      "name": "Get user",
+      "method": "GET",
+      "url": "{{BASE_URL}}/users/{{USER_ID}}",
+      "assertions": [
+        "status == 200",
+        "response.body.id exists",
+        "response.body.email == \"Sincere@april.biz\"",
+        "response.time < 3000ms"
+      ],
+      "extract": [
+        { "variable": "username", "from": "body.username" }
+      ]
+    },
+    {
+      "name": "List posts by user",
+      "method": "GET",
+      "url": "{{BASE_URL}}/posts",
+      "queryParams": [
+        { "key": "userId", "value": "{{USER_ID}}", "enabled": true }
+      ],
+      "assertions": [
+        "status == 200",
+        "response.body[0].userId == 1"
+      ]
+    },
+    {
+      "name": "Create post",
+      "method": "POST",
+      "url": "{{BASE_URL}}/posts",
+      "body": {
+        "type": "json",
+        "content": "{\"title\": \"hello from {{username}}\", \"body\": \"posted by byteforge\", \"userId\": {{USER_ID}}}"
+      },
+      "assertions": [
+        "status == 201",
+        "response.body.id exists"
+      ]
+    }
+  ]
+}

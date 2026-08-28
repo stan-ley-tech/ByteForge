@@ -1,0 +1,7 @@
+{
+  "name": "JSONPlaceholder",
+  "variables": {
+    "BASE_URL": { "value": "https://jsonplaceholder.typicode.com", "secret": false },
+    "USER_ID": { "value": "1", "secret": false }
+  }
+}

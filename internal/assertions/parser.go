@@ -136,19 +136,28 @@ func parseOperand(token string) (operand, error) {
 		}
 		return operand{kind: kindHeader, header: name, raw: token}, nil
 
-	case token == "response.body" || token == "body":
-		return operand{kind: kindBodyPath, raw: token}, nil
+	// A response body that is itself a JSON array (a list endpoint) is
+	// referenced as response.body[0].id, with no dot before the bracket —
+	// bodyPath handles both that and the dotted response.body.id form.
+	case token == "response.body" || strings.HasPrefix(token, "response.body.") || strings.HasPrefix(token, "response.body["):
+		return operand{kind: kindBodyPath, path: bodyPath(token, "response.body"), raw: token}, nil
 
-	case strings.HasPrefix(token, "response.body."):
-		return operand{kind: kindBodyPath, path: strings.TrimPrefix(token, "response.body."), raw: token}, nil
-
-	case strings.HasPrefix(token, "body."):
-		return operand{kind: kindBodyPath, path: strings.TrimPrefix(token, "body."), raw: token}, nil
+	case token == "body" || strings.HasPrefix(token, "body.") || strings.HasPrefix(token, "body["):
+		return operand{kind: kindBodyPath, path: bodyPath(token, "body"), raw: token}, nil
 
 	default:
 		return operand{}, fmt.Errorf(
 			"unrecognized operand %q (expected status, response.time, response.body.<path>, or response.header.<name>)", token)
 	}
+}
+
+// bodyPath strips the leading "response.body"/"body" operand prefix off
+// token, leaving whatever jsonpath.Query expects: either empty (the whole
+// body), a dotted path ("id", ".id" -> "id"), or a bracketed one
+// ("[0].id") left untouched, since jsonpath tolerates an empty leading
+// segment name either way.
+func bodyPath(token, prefix string) string {
+	return strings.TrimPrefix(strings.TrimPrefix(token, prefix), ".")
 }
 
 // parseLiteral recognizes the right-hand values an assertion can compare

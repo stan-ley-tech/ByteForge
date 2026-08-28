@@ -93,6 +93,23 @@ func TestEvaluate_WildcardBodyPathContains(t *testing.T) {
 	}
 }
 
+func TestEvaluate_TopLevelArrayBody(t *testing.T) {
+	// A list endpoint's response body is often a bare JSON array rather
+	// than an object, e.g. `[{"id":1},{"id":2}]`. response.body[0].id must
+	// work without requiring a dot between "body" and the bracket.
+	ctx := Context{Body: []byte(`[{"id": 1, "userId": 7}, {"id": 2, "userId": 7}]`)}
+
+	if r := mustParse(t, "response.body[0].id == 1").Evaluate(ctx); !r.Passed {
+		t.Fatalf("expected pass, got %+v", r)
+	}
+	if r := mustParse(t, "response.body[*].userId contains 7").Evaluate(ctx); !r.Passed {
+		t.Fatalf("expected pass, got %+v", r)
+	}
+	if r := mustParse(t, "response.body[5].id exists").Evaluate(ctx); r.Passed {
+		t.Fatalf("expected fail for an out-of-range index, got %+v", r)
+	}
+}
+
 func TestEvaluate_NonJSONBodyProducesError(t *testing.T) {
 	ctx := Context{Body: []byte("not json")}
 	r := mustParse(t, "response.body.id exists").Evaluate(ctx)

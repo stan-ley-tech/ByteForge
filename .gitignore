@@ -11,6 +11,7 @@ byteforge.exe
 *.db-shm
 *.db-wal
 data/
+.e2e.db*
 
 # Node / web
 web/node_modules/

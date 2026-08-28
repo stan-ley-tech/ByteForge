@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:server": "npm run build && go run ../cmd/byteforge serve --addr :8089 --db ../.e2e.db --static ./dist"
   },
   "dependencies": {
     "react": "^18.3.1",

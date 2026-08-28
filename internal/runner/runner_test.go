@@ -89,6 +89,12 @@ func TestRun_ChainsExtractedVariableIntoNextRequest(t *testing.T) {
 	if !report.Steps[1].Passed {
 		t.Fatalf("profile step failed, meaning the extracted token wasn't chained: %+v", report.Steps[1])
 	}
+	if report.Steps[1].Body == "" {
+		t.Fatal("expected the response body to be captured on the step, for the UI's response viewer")
+	}
+	if report.Steps[1].Headers.Get("Content-Type") != "application/json" {
+		t.Fatalf("expected response headers to be captured, got %v", report.Steps[1].Headers)
+	}
 }
 
 func TestRun_StopOnFailureHaltsChain(t *testing.T) {

@@ -122,6 +122,8 @@ func (rn *Runner) runStep(ctx context.Context, req collections.Request, env *env
 
 	step.Status = resp.StatusCode
 	step.Duration = resp.Duration
+	step.Headers = resp.Header
+	step.Body = string(resp.Body)
 
 	parsed, err := assertions.ParseAll(req.Assertions)
 	if err != nil {

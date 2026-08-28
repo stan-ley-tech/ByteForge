@@ -2,6 +2,7 @@ package runner
 
 import (
 	"encoding/json"
+	"net/http"
 	"time"
 
 	"github.com/stan-ley-tech/ByteForge/internal/assertions"
@@ -15,6 +16,8 @@ type StepResult struct {
 	URL        string              `json:"url"`
 	Status     int                 `json:"status,omitempty"`
 	Duration   time.Duration       `json:"-"` // see MarshalJSON: exposed as integer milliseconds
+	Headers    http.Header         `json:"headers,omitempty"`
+	Body       string              `json:"body,omitempty"`
 	Assertions []assertions.Result `json:"assertions,omitempty"`
 	Passed     bool                `json:"passed"`
 	// Error is set when the request itself couldn't be completed (a

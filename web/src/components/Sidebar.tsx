@@ -106,6 +106,7 @@ export default function Sidebar({
                 type="button"
                 className="btn btn--icon"
                 title="Run collection"
+                aria-label="Run collection"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRunCollection(c.id);

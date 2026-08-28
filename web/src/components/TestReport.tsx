@@ -14,7 +14,7 @@ export default function TestReport({ steps, running, summary, onClose }: Props) 
       <div className="modal modal--wide" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
           <h2>Test Run{running ? " (running…)" : ""}</h2>
-          <button type="button" className="btn btn--icon" onClick={onClose}>
+          <button type="button" className="btn btn--icon" aria-label="Close" onClick={onClose}>
             ×
           </button>
         </div>

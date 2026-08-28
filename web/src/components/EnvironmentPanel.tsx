@@ -49,7 +49,7 @@ export default function EnvironmentPanel({ environments, onClose, onCreate, onSa
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
           <h2>Environments</h2>
-          <button type="button" className="btn btn--icon" onClick={onClose}>
+          <button type="button" className="btn btn--icon" aria-label="Close" onClick={onClose}>
             ×
           </button>
         </div>
@@ -132,7 +132,12 @@ export default function EnvironmentPanel({ environments, onClose, onCreate, onSa
                           />
                         </td>
                         <td>
-                          <button type="button" className="btn btn--icon" onClick={() => removeVariable(name)}>
+                          <button
+                            type="button"
+                            className="btn btn--icon"
+                            aria-label={`Remove variable ${name}`}
+                            onClick={() => removeVariable(name)}
+                          >
                             ×
                           </button>
                         </td>

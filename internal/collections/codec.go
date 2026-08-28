@@ -33,6 +33,10 @@ func Decode(r io.Reader) (*Collection, error) {
 func Encode(w io.Writer, c *Collection) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
+	// Assertions routinely contain "<" and ">" (response.time < 500ms);
+	// without this they'd come out as < in a file meant to be read
+	// and diffed by a human.
+	enc.SetEscapeHTML(false)
 	if err := enc.Encode(c); err != nil {
 		return fmt.Errorf("collections: encode: %w", err)
 	}

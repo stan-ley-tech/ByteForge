@@ -1,0 +1,16 @@
+services:
+  byteforge:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - byteforge-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  byteforge-data:

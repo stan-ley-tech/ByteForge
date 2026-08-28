@@ -1,0 +1,13 @@
+.git
+bin/
+*.db
+*.db-journal
+web/node_modules
+web/dist
+web/coverage
+web/playwright-report
+web/test-results
+docs/
+tests/
+*.md
+.github

@@ -1,0 +1,27 @@
+name: API Tests
+
+# This is ByteForge testing itself as its own dogfood example: the CLI is
+# built fresh from source and run against the sample collection, and its
+# exit code — non-zero on any failed assertion — is what gates the build.
+# No separate test runner or framework is involved; `byteforge test` IS
+# the CI gate.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - name: Build the ByteForge CLI
+        run: go build -o byteforge ./cmd/byteforge
+
+      - name: Run the sample API test collection
+        run: ./byteforge test tests/fixtures/sample-collection.json --env tests/fixtures/sample-environment.json

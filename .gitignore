@@ -1,9 +1,12 @@
 # Go
+# Leading slashes anchor these to the repo root — unanchored, "byteforge"
+# would also match (and silently exclude from git) the cmd/byteforge/
+# source directory, since gitignore patterns match at any depth by default.
 /bin/
 *.test
 *.out
-byteforge
-byteforge.exe
+/byteforge
+/byteforge.exe
 
 # SQLite data
 *.db

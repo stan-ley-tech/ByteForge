@@ -28,10 +28,14 @@ type Context struct {
 
 // Result is the outcome of evaluating a single Assertion.
 type Result struct {
-	Expression string
-	Passed     bool
-	Message    string
-	Err        error
+	Expression string `json:"expression"`
+	Passed     bool   `json:"passed"`
+	Message    string `json:"message"`
+	// Err is the underlying Go error, if evaluation itself failed (as
+	// opposed to the assertion simply not passing). It's deliberately not
+	// serialized: error values carry no exported fields for encoding/json
+	// to marshal, and Message already renders it as readable text.
+	Err error `json:"-"`
 }
 
 // Assertion is a parsed expression, ready to be evaluated repeatedly

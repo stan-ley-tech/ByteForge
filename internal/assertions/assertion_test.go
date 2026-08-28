@@ -1,6 +1,7 @@
 package assertions
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 	"time"
@@ -125,6 +126,30 @@ func TestParseAll_SkipsBlankLines(t *testing.T) {
 	}
 	if len(list) != 2 {
 		t.Fatalf("len(list) = %d, want 2", len(list))
+	}
+}
+
+func TestResult_MarshalJSON_UsesLowercaseFieldNames(t *testing.T) {
+	// A previous version of Result had no json tags, so it serialized as
+	// {"Passed": true, "Message": "..."} — every non-Go client checking
+	// result.passed (lowercase) would read undefined and treat every
+	// assertion as failed regardless of the actual outcome.
+	r := mustParse(t, "status == 200").Evaluate(Context{Status: 200})
+
+	data, err := json.Marshal(r)
+	if err != nil {
+		t.Fatalf("Marshal returned error: %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		t.Fatalf("Unmarshal returned error: %v", err)
+	}
+	if decoded["passed"] != true {
+		t.Fatalf("decoded[\"passed\"] = %v, want true (got keys: %v)", decoded["passed"], decoded)
+	}
+	if decoded["message"] == nil {
+		t.Fatalf("decoded[\"message\"] missing (got keys: %v)", decoded)
 	}
 }
 

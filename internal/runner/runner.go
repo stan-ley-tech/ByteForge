@@ -81,6 +81,14 @@ func (rn *Runner) Run(ctx context.Context, coll *collections.Collection, env *en
 	return report, nil
 }
 
+// SendOne executes a single request outside of any collection or chain: no
+// extracted variables in, none captured out. It's what powers the request
+// builder's "Send" button and the API's ad-hoc request endpoint.
+func (rn *Runner) SendOne(ctx context.Context, req collections.Request, env *environments.Environment, opts Options) StepResult {
+	step, _ := rn.runStep(ctx, req, env, make(map[string]string), opts)
+	return step
+}
+
 // runStep executes a single request. It only returns a non-nil error for
 // conditions the run can't meaningfully continue past (context
 // cancellation); everything else — a bad template, a connection failure, a

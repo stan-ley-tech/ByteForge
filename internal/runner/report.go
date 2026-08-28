@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/stan-ley-tech/ByteForge/internal/assertions"
@@ -13,13 +14,24 @@ type StepResult struct {
 	Method     string              `json:"method"`
 	URL        string              `json:"url"`
 	Status     int                 `json:"status,omitempty"`
-	Duration   time.Duration       `json:"durationMs"`
+	Duration   time.Duration       `json:"-"` // see MarshalJSON: exposed as integer milliseconds
 	Assertions []assertions.Result `json:"assertions,omitempty"`
 	Passed     bool                `json:"passed"`
 	// Error is set when the request itself couldn't be completed (a
 	// template failed to render, the connection failed, extraction failed)
 	// as distinct from an assertion simply not passing.
 	Error string `json:"error,omitempty"`
+}
+
+// MarshalJSON reports Duration in whole milliseconds. time.Duration's own
+// JSON representation is nanoseconds, which every non-Go client would
+// misread given a field named "durationMs".
+func (s StepResult) MarshalJSON() ([]byte, error) {
+	type alias StepResult
+	return json.Marshal(struct {
+		alias
+		DurationMs int64 `json:"durationMs"`
+	}{alias: alias(s), DurationMs: s.Duration.Milliseconds()})
 }
 
 // Report is the result of running a whole collection: one StepResult per
@@ -29,9 +41,19 @@ type Report struct {
 	Environment    string        `json:"environment,omitempty"`
 	Steps          []StepResult  `json:"steps"`
 	Started        time.Time     `json:"started"`
-	Duration       time.Duration `json:"durationMs"`
+	Duration       time.Duration `json:"-"` // see MarshalJSON
 	Passed         int           `json:"passed"`
 	Failed         int           `json:"failed"`
+}
+
+// MarshalJSON reports Duration in whole milliseconds; see StepResult's
+// MarshalJSON for why this can't just be a struct tag.
+func (r Report) MarshalJSON() ([]byte, error) {
+	type alias Report
+	return json.Marshal(struct {
+		alias
+		DurationMs int64 `json:"durationMs"`
+	}{alias: alias(r), DurationMs: r.Duration.Milliseconds()})
 }
 
 // AllPassed reports whether every step in the run passed. The CLI's `test`
